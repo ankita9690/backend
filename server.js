@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Setup for CORS (Ensure the frontend URL is allowed to make requests)
 app.use(cors({
-    origin: 'https://your-frontend.onrender.com', // Replace with your frontend Render URL
+    origin: 'https://frontend-ug0t.onrender.com', // Replace with your frontend Render URL
     methods: 'GET,POST',
     allowedHeaders: 'Content-Type,Authorization'
 }));
