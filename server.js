@@ -8,12 +8,18 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Setup for CORS and parsing JSON
-app.use(cors());
+// Setup for CORS (Ensure the frontend URL is allowed to make requests)
+app.use(cors({
+    origin: 'https://your-frontend.onrender.com', // Replace with your frontend Render URL
+    methods: 'GET,POST',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
+
+// Middleware to parse JSON and serve static files
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve static files from frontend build directory
+// Serve static files from frontend build directory (if necessary for local dev or combined deployment)
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // Catch-all route to serve the React app for unknown routes
@@ -21,8 +27,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
-
-// Layout Template Path
+// Layout Template Path (Make sure layout.html is in the correct location)
 const layoutPath = path.join(__dirname, 'layout.html');
 
 // API to fetch the email layout HTML
@@ -40,9 +45,7 @@ const upload = multer({ storage });
 
 // API to upload an image
 app.post('/uploadImage', upload.single('image'), (req, res) => {
-    // const imageUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
     const imageUrl = `${req.protocol}://${req.headers.host}/uploads/${req.file.filename}`;
-
     res.json({ success: true, imageUrl });
 });
 
@@ -84,15 +87,11 @@ app.post('/uploadEmailConfig', (req, res) => {
     });
 });
 
-
-
-
 // API to download the rendered email template
 app.get('/renderAndDownloadTemplate', (req, res) => {
     const outputPath = path.join(__dirname, 'output.html');
     res.download(outputPath);
 });
 
+// Start the server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
-
